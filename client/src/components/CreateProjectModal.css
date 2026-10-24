@@ -1,0 +1,142 @@
+.dash-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.dash-modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: left;
+  color: #0f172a;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+}
+
+.dash-modal-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dash-modal label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.dash-modal-optional {
+  font-weight: 400;
+  color: #64748b;
+}
+
+.dash-modal input,
+.dash-modal textarea,
+.dash-modal select {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.dash-modal textarea {
+  resize: vertical;
+}
+
+.dash-modal input:focus,
+.dash-modal textarea:focus,
+.dash-modal select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.dash-modal input[aria-invalid='true'] {
+  border-color: #dc2626;
+  margin-bottom: 6px;
+}
+
+.dash-modal-field-error {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+.dash-modal-error {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+.dash-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.dash-modal-actions button {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dash-modal-cancel {
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+.dash-modal-cancel:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.dash-modal-submit {
+  color: #ffffff;
+  background: #4f46e5;
+  border: none;
+}
+
+.dash-modal-submit:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.dash-modal-actions button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .dash-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .dash-modal-actions button {
+    width: 100%;
+  }
+}

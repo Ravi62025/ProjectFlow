@@ -1,0 +1,368 @@
+/* Task section */
+.ts-section {
+  margin-top: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.ts-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ts-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.ts-section .dash-success,
+.ts-section .dash-state,
+.ts-section .dash-error {
+  margin-bottom: 16px;
+}
+
+/* Progress overview */
+.ts-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.ts-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.ts-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ts-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.ts-stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.ts-stat-todo .ts-stat-value { color: #475569; }
+.ts-stat-progress .ts-stat-value { color: #1d4ed8; }
+.ts-stat-done .ts-stat-value { color: #166534; }
+
+.ts-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ts-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #334155;
+}
+
+.ts-progress-head strong {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.ts-progress-track {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.ts-progress-fill {
+  height: 100%;
+  background: #4f46e5;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.ts-progress-fill-complete {
+  background: #16a34a;
+}
+
+.ts-progress-note {
+  font-size: 13px;
+  color: #64748b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-progress-fill {
+    transition: none;
+  }
+}
+
+/* Filters and sorting */
+.ts-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ts-control {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 140px;
+  max-width: 220px;
+  min-width: 0;
+}
+
+.ts-control label {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.ts-control select {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+}
+
+.ts-control select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.ts-toolbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 100%;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Refresh notice and link-style button */
+.ts-warning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+.ts-link {
+  flex-shrink: 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f46e5;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.ts-link:hover {
+  text-decoration: underline;
+}
+
+/* Task list */
+.ts-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ts-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.ts-item-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.ts-item-title {
+  font-size: 15px;
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.ts-item-desc {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #475569;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ts-item-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 45%;
+}
+
+.ts-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.ts-due {
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* Priority pills (shape comes from .dash-status) */
+.ts-priority-low { color: #0f766e; background: #ccfbf1; }
+.ts-priority-medium { color: #b45309; background: #fef3c7; }
+.ts-priority-high { color: #b91c1c; background: #fee2e2; }
+
+/* Edit / delete actions */
+.ts-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ts-action {
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4f46e5;
+  background: #ffffff;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ts-action:hover {
+  background: #eef2ff;
+}
+
+.ts-action-danger {
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.ts-action-danger:hover {
+  background: #fef2f2;
+}
+
+.ts-confirm-text {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #334155;
+  overflow-wrap: anywhere;
+}
+
+.ts-danger-submit {
+  color: #ffffff;
+  background: #dc2626;
+  border: none;
+}
+
+.ts-danger-submit:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+/* Create / edit task form: status and priority side by side */
+.ts-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ts-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .ts-section {
+    padding: 16px;
+  }
+
+  .ts-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ts-control {
+    flex: 1 1 calc(50% - 6px);
+    max-width: none;
+  }
+
+  .ts-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ts-item-side {
+    align-items: flex-start;
+    max-width: none;
+  }
+
+  .ts-item-meta {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .ts-form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

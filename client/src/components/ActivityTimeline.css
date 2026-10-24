@@ -1,0 +1,175 @@
+/* Activity timeline */
+.at-section {
+  margin-top: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.at-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.at-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.at-refresh {
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4f46e5;
+  background: #ffffff;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.at-refresh:hover:not(:disabled) {
+  background: #eef2ff;
+}
+
+.at-refresh:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Shown when a refresh fails but the last loaded activity is still displayed */
+.at-warning {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+/* Timeline list: a vertical line on the left with one dot per activity */
+.at-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.at-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 0 20px 26px;
+}
+
+.at-item:last-child {
+  padding-bottom: 0;
+}
+
+.at-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  bottom: -2px;
+  left: 4px;
+  width: 2px;
+  background: #e2e8f0;
+}
+
+.at-dot {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  background: #94a3b8;
+  border-radius: 50%;
+}
+
+.at-type-task_created .at-dot,
+.at-type-project_created .at-dot { background: #16a34a; }
+.at-type-task_updated .at-dot,
+.at-type-project_updated .at-dot { background: #4f46e5; }
+.at-type-task_status_changed .at-dot { background: #2563eb; }
+.at-type-task_deleted .at-dot { background: #dc2626; }
+
+.at-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.at-line {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #0f172a;
+}
+
+.at-label {
+  color: #475569;
+}
+
+.at-subject {
+  overflow-wrap: anywhere;
+}
+
+.at-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.at-time {
+  flex-shrink: 0;
+  padding-top: 2px;
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.at-note {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Text for screen readers only */
+.at-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .at-section {
+    padding: 16px;
+  }
+
+  /* The time moves under the text instead of sitting beside it */
+  .at-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .at-time {
+    padding-top: 0;
+    white-space: normal;
+  }
+}

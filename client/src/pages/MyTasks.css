@@ -1,0 +1,234 @@
+/* My Tasks page */
+.mt-page {
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+.mt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.mt-brand {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.mt-back {
+  font-size: 14px;
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.mt-back:hover,
+.mt-project-link:hover,
+.mt-empty-link:hover {
+  text-decoration: underline;
+}
+
+.mt-back:focus-visible,
+.mt-project-link:focus-visible,
+.mt-empty-link:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.mt-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.mt-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 20px;
+}
+
+.mt-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.mt-summary {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.mt-empty-link {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #4f46e5;
+}
+
+/* Task list */
+.mt-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mt-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.mt-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mt-item-title {
+  font-size: 16px;
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.mt-item-project {
+  font-size: 14px;
+  color: #64748b;
+  overflow-wrap: anywhere;
+}
+
+.mt-project-link {
+  font-weight: 600;
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.mt-muted {
+  color: #64748b;
+}
+
+.mt-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mt-due {
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* Priority pills (shape comes from .dash-status) */
+.mt-priority-low { color: #0f766e; background: #ccfbf1; }
+.mt-priority-medium { color: #b45309; background: #fef3c7; }
+.mt-priority-high { color: #b91c1c; background: #fee2e2; }
+
+@media (max-width: 600px) {
+  .mt-header {
+    padding: 14px 16px;
+  }
+
+  .mt-content {
+    padding: 16px;
+  }
+
+  .mt-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .mt-item-meta {
+    justify-content: flex-start;
+  }
+}
+
+/* Status control: a select styled like the status pills */
+.mt-status-select {
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.mt-status-select option {
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.mt-status-select:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.mt-status-select:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.mt-status-todo { color: #334155; background: #e2e8f0; }
+.mt-status-progress { color: #1d4ed8; background: #dbeafe; }
+.mt-status-done { color: #166534; background: #dcfce7; }
+.mt-status-other { color: #475569; background: #f1f5f9; border-color: #cbd5e1; }
+
+.mt-saving {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.mt-item-error {
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+/* Sort control: the longest option label must not overflow narrow screens */
+.mt-sort-field select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Due-date indicators. Text labels carry the meaning, so colour is never the only signal. */
+.mt-badge {
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+
+/* Solid red with white text, so it doesn't look like the pale "High priority" pill */
+.mt-badge-overdue { color: #ffffff; background: #b91c1c; border-color: #b91c1c; }
+
+/* Orange with a visible border, so it doesn't look like the amber "Medium priority" pill */
+.mt-badge-today { color: #9a3412; background: #ffedd5; border-color: #fb923c; }
+
+.mt-due-overdue {
+  font-weight: 600;
+  color: #b91c1c;
+}
