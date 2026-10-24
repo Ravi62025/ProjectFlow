@@ -2,6 +2,7 @@ import { describe, test, before, after, beforeEach, mock } from "node:test";
 import assert from "node:assert/strict";
 import request from "supertest";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { startTestDb, clearTestDb, stopTestDb, TEST_JWT_SECRET } from "./helpers.js";
 import app from "../src/app.js";
 import User from "../src/models/User.js";
@@ -32,6 +33,35 @@ const breakMethod = (Model, method) => {
     logged.mock.restore();
   };
 };
+
+// Makes `Model.create` save the document and then throw, like a write whose success
+// message was lost. `written` collects the IDs that really were saved, so a test can
+// prove the write happened. Returns the mock; call `.mock.restore()` when done.
+const persistThenThrow = (Model, written) => {
+  const original = Model.create.bind(Model);
+  return mock.method(Model, "create", async (...args) => {
+    const saved = await original(...args);
+    written.push(saved._id);
+    throw new Error("simulated lost response");
+  });
+};
+
+// Wraps a model method so every call is recorded and then passed on to the real method
+const spyOn = (Model, method, name, events) => {
+  const original = Model[method].bind(Model);
+  return mock.method(Model, method, (filter) => {
+    events.push({ name, filter: JSON.parse(JSON.stringify(filter)) });
+    return original(filter);
+  });
+};
+
+// Everything stored in the three collections, in a stable order
+const everything = async () =>
+  JSON.stringify({
+    users: await User.find().sort({ _id: 1 }).lean(),
+    workspaces: await Workspace.find().sort({ _id: 1 }).lean(),
+    memberships: await Membership.find().sort({ _id: 1 }).lean(),
+  });
 
 describe("registration and the personal workspace", () => {
   before(startTestDb);
@@ -217,6 +247,180 @@ describe("registration and the personal workspace", () => {
       // Only the user is left (the migration step repairs this), and the failure is logged
       assert.deepEqual(await counts(), { users: 1, workspaces: 0, memberships: 0 });
       assert.ok(messages.some((message) => message.includes("Registration cleanup failed (user")));
+    });
+
+    test("a membership that was saved before the error is removed", async () => {
+      const written = [];
+      const failing = persistThenThrow(Membership, written);
+      const logged = mock.method(console, "error", () => {});
+      let res;
+      try {
+        res = await register();
+      } finally {
+        failing.mock.restore();
+        logged.mock.restore();
+      }
+
+      assert.equal(res.status, 500);
+      assert.deepEqual(res.body, { message: "Server error" });
+
+      // The write really happened ...
+      assert.equal(written.length, 1);
+      // ... and the cleanup removed it, together with the workspace and the user
+      assert.equal(await Membership.countDocuments({ _id: written[0] }), 0);
+      assert.deepEqual(await counts(), { users: 0, workspaces: 0, memberships: 0 });
+    });
+
+    test("a workspace that was saved before the error is removed, and no membership cleanup runs", async () => {
+      const written = [];
+      const failing = persistThenThrow(Workspace, written);
+      const events = [];
+      const membershipDelete = spyOn(Membership, "deleteMany", "Membership.deleteMany", events);
+      const logged = mock.method(console, "error", () => {});
+      let res;
+      try {
+        res = await register();
+      } finally {
+        failing.mock.restore();
+        membershipDelete.mock.restore();
+        logged.mock.restore();
+      }
+
+      assert.equal(res.status, 500);
+      assert.deepEqual(res.body, { message: "Server error" });
+      assert.equal(written.length, 1);
+      assert.equal(await Workspace.countDocuments({ _id: written[0] }), 0);
+      assert.deepEqual(await counts(), { users: 0, workspaces: 0, memberships: 0 });
+
+      // The workspace ID was never known, so no membership could exist yet
+      assert.equal(events.length, 0);
+    });
+
+    test("cleanup removes only the failed attempt and leaves other users' records alone", async () => {
+      // An existing user with a personal workspace, plus a team workspace with two members
+      const first = await register();
+      assert.equal(first.status, 201);
+      const team = await Workspace.create({ name: "Team", createdBy: first.body.id });
+      await Membership.create({ workspace: team._id, user: first.body.id, role: "owner" });
+      await Membership.create({
+        workspace: team._id,
+        user: new mongoose.Types.ObjectId(),
+        role: "member",
+      });
+      const beforeAttempt = await everything();
+      assert.deepEqual(await counts(), { users: 1, workspaces: 2, memberships: 3 });
+
+      // A second registration whose membership is saved and then fails
+      const written = [];
+      const failing = persistThenThrow(Membership, written);
+      const logged = mock.method(console, "error", () => {});
+      let res;
+      try {
+        res = await register({ ...USER, name: "Second", email: "second@example.com" });
+      } finally {
+        failing.mock.restore();
+        logged.mock.restore();
+      }
+
+      assert.equal(res.status, 500);
+      assert.equal(written.length, 1); // the failed attempt really saved a membership
+      assert.equal(await everything(), beforeAttempt, "existing records must be untouched");
+    });
+
+    test("cleanup deletes with narrow filters, in reverse order", async () => {
+      const ids = {};
+      const events = [];
+
+      // Remember the IDs the attempt creates, and make the last step fail
+      const userCreate = User.create.bind(User);
+      const workspaceCreate = Workspace.create.bind(Workspace);
+      const recordUser = mock.method(User, "create", async (...args) => {
+        const saved = await userCreate(...args);
+        ids.user = saved._id;
+        return saved;
+      });
+      const recordWorkspace = mock.method(Workspace, "create", async (...args) => {
+        const saved = await workspaceCreate(...args);
+        ids.workspace = saved._id;
+        return saved;
+      });
+      const failing = mock.method(Membership, "create", async () => {
+        throw new Error("simulated membership failure");
+      });
+      const spies = [
+        spyOn(Membership, "deleteMany", "Membership.deleteMany", events),
+        spyOn(Workspace, "deleteOne", "Workspace.deleteOne", events),
+        spyOn(User, "deleteOne", "User.deleteOne", events),
+      ];
+      const logged = mock.method(console, "error", () => {});
+      let res;
+      try {
+        res = await register();
+      } finally {
+        for (const mocked of [recordUser, recordWorkspace, failing, ...spies, logged]) {
+          mocked.mock.restore();
+        }
+      }
+
+      assert.equal(res.status, 500);
+      assert.deepEqual(
+        events.map((event) => event.name),
+        ["Membership.deleteMany", "Workspace.deleteOne", "User.deleteOne"]
+      );
+      assert.deepEqual(events[0].filter, { workspace: String(ids.workspace) });
+      assert.deepEqual(events[1].filter, { createdBy: String(ids.user), isPersonal: true });
+      assert.deepEqual(events[2].filter, { _id: String(ids.user) });
+    });
+
+    test("if the membership cleanup fails, the workspace and user are still cleaned up and it is logged", async () => {
+      const written = [];
+      const failingStep = persistThenThrow(Membership, written);
+      const failingCleanup = mock.method(Membership, "deleteMany", async () => {
+        throw new Error("simulated membership cleanup failure");
+      });
+      const logged = mock.method(console, "error", () => {});
+      let res;
+      try {
+        res = await register();
+      } finally {
+        failingStep.mock.restore();
+        failingCleanup.mock.restore();
+      }
+      const messages = logged.mock.calls.map((call) => call.arguments.join(" "));
+      logged.mock.restore();
+
+      assert.equal(res.status, 500);
+      assert.deepEqual(res.body, { message: "Server error" });
+
+      // Only the saved membership is left (the migration reports this), and it is logged
+      assert.equal(written.length, 1);
+      assert.deepEqual(await counts(), { users: 0, workspaces: 0, memberships: 1 });
+      assert.ok(messages.some((message) => message.includes("Registration cleanup failed (membership")));
+    });
+
+    test("if the workspace cleanup fails, the membership and user are still cleaned up and it is logged", async () => {
+      const written = [];
+      const failingStep = persistThenThrow(Membership, written);
+      const failingCleanup = mock.method(Workspace, "deleteOne", async () => {
+        throw new Error("simulated workspace cleanup failure");
+      });
+      const logged = mock.method(console, "error", () => {});
+      let res;
+      try {
+        res = await register();
+      } finally {
+        failingStep.mock.restore();
+        failingCleanup.mock.restore();
+      }
+      const messages = logged.mock.calls.map((call) => call.arguments.join(" "));
+      logged.mock.restore();
+
+      assert.equal(res.status, 500);
+      assert.deepEqual(res.body, { message: "Server error" });
+
+      // Only the workspace is left (the migration reports this), and it is logged
+      assert.deepEqual(await counts(), { users: 0, workspaces: 1, memberships: 0 });
+      assert.ok(messages.some((message) => message.includes("Registration cleanup failed (workspace")));
     });
   });
 });
